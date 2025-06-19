@@ -1,0 +1,11 @@
+RANK,PATH,SCORE,PATH_LENGTH,EFFICIENCY,COMPLEXITY,COMPOSITE_SCORE
+1,"left,left,left,left,left,left,middle",185,7,26.43,0.1429,0.5652
+2,"middle,left,left,left,left,left,middle",185,7,26.43,0.2857,0.5366
+3,"right,left,left,left,left,left,middle",185,7,26.43,0.2857,0.5366
+4,"left,left,left,left,left,left,middle,middle",185,8,23.12,0.125,0.5338
+5,"left,left,left,left,left,left,middle,left",185,8,23.12,0.25,0.5088
+6,"left,left,left,left,left,left,middle,right",185,8,23.12,0.25,0.5088
+7,"middle,left,left,left,left,left,middle,middle",185,8,23.12,0.25,0.5088
+8,"right,left,left,left,left,left,middle,middle",185,8,23.12,0.25,0.5088
+9,"left,left,left,middle,left,left,left,middle",190,8,23.75,0.375,0.4963
+10,"left,left,left,right,left,left,left,middle",190,8,23.75,0.375,0.4963
