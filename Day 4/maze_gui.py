@@ -43,6 +43,7 @@ class MazeGUI:
         self.best_paths = []
         self.maze_graph = None
         self.graph_pos = None
+        self.show_best_paths = False
         
         # Create GUI components
         self.setup_gui()
@@ -126,6 +127,23 @@ class MazeGUI:
         ttk.Button(anim_frame, text="Step", command=self.step_animation).pack(side=tk.LEFT, padx=(0, 5))
         ttk.Button(anim_frame, text="Reset", command=self.reset_path).pack(side=tk.LEFT)
         
+        # Path display controls
+        display_frame = ttk.Frame(solve_frame)
+        display_frame.pack(fill=tk.X, pady=(5, 0))
+        
+        self.show_paths_var = tk.BooleanVar(value=False)
+        self.show_paths_checkbox = ttk.Checkbutton(display_frame, text="Highlight Best Paths", 
+                                                  variable=self.show_paths_var,
+                                                  command=self.toggle_path_display)
+        self.show_paths_checkbox.pack(side=tk.LEFT)
+        
+        # Camera following control
+        self.follow_camera_var = tk.BooleanVar(value=True)
+        self.follow_camera_checkbox = ttk.Checkbutton(display_frame, text="Follow Camera", 
+                                                     variable=self.follow_camera_var,
+                                                     command=self.toggle_camera_follow)
+        self.follow_camera_checkbox.pack(side=tk.LEFT, padx=(20, 0))
+        
         # File operations
         file_frame = ttk.LabelFrame(control_frame, text="File Operations", padding="5")
         file_frame.pack(fill=tk.X, pady=(0, 10))
@@ -135,28 +153,95 @@ class MazeGUI:
         ttk.Button(file_frame, text="Generate New Maze", command=self.generate_new_maze).pack(fill=tk.X)
         
     def create_visualization_panel(self, parent):
-        """Create the main visualization panel"""
-        viz_frame = ttk.LabelFrame(parent, text="Maze Visualization", padding="5")
+        """Create the main visualization panel with enhanced interactivity"""
+        viz_frame = ttk.LabelFrame(parent, text="Interactive Maze Visualization", padding="5")
         viz_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S))
         viz_frame.columnconfigure(0, weight=1)
         viz_frame.rowconfigure(0, weight=1)
         
-        # Create matplotlib figure
-        self.fig = Figure(figsize=(10, 8), dpi=100)
+        # Create matplotlib figure with larger size for better visibility
+        self.fig = Figure(figsize=(12, 10), dpi=100)
         self.ax = self.fig.add_subplot(111)
         
-        # Create canvas
-        self.canvas = FigureCanvasTkAgg(self.fig, viz_frame)
+        # Enable interactive features
+        self.fig.patch.set_facecolor('white')
+        self.ax.set_facecolor('white')
+        
+        # Create scrollable frame for the canvas
+        canvas_frame = ttk.Frame(viz_frame)
+        canvas_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        canvas_frame.columnconfigure(0, weight=1)
+        canvas_frame.rowconfigure(0, weight=1)
+        
+        # Create canvas with scrollbars
+        self.canvas = FigureCanvasTkAgg(self.fig, canvas_frame)
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        canvas_widget = self.canvas.get_tk_widget()
+        canvas_widget.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Add toolbar
+        # Add scrollbars
+        v_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL)
+        v_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        h_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.HORIZONTAL)
+        h_scrollbar.grid(row=1, column=0, sticky=(tk.W, tk.E))
+        
+        # Enhanced toolbar with custom controls
         toolbar_frame = ttk.Frame(viz_frame)
-        toolbar_frame.grid(row=1, column=0, sticky=(tk.W, tk.E))
+        toolbar_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(5, 0))
         
+        # Standard matplotlib navigation toolbar
         from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
-        toolbar = NavigationToolbar2Tk(self.canvas, toolbar_frame)
-        toolbar.update()
+        self.toolbar = NavigationToolbar2Tk(self.canvas, toolbar_frame)
+        self.toolbar.update()
+        
+        # Custom control buttons
+        custom_controls = ttk.Frame(toolbar_frame)
+        custom_controls.pack(side=tk.RIGHT, padx=(10, 0))
+        
+        ttk.Button(custom_controls, text="Fit to Window", command=self.fit_maze_to_window).pack(side=tk.LEFT, padx=2)
+        ttk.Button(custom_controls, text="Reset View", command=self.reset_view).pack(side=tk.LEFT, padx=2)
+        ttk.Button(custom_controls, text="Center Current", command=self.center_on_current).pack(side=tk.LEFT, padx=2)
+        ttk.Button(custom_controls, text="Zoom In", command=self.zoom_in).pack(side=tk.LEFT, padx=2)
+        ttk.Button(custom_controls, text="Zoom Out", command=self.zoom_out).pack(side=tk.LEFT, padx=2)
+        
+        # View options
+        view_frame = ttk.LabelFrame(viz_frame, text="View Options", padding="3")
+        view_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=(5, 0))
+        
+        # Layout options
+        layout_frame = ttk.Frame(view_frame)
+        layout_frame.pack(fill=tk.X)
+        
+        ttk.Label(layout_frame, text="Layout:").pack(side=tk.LEFT)
+        
+        self.layout_var = tk.StringVar(value="hierarchical")
+        layout_combo = ttk.Combobox(layout_frame, textvariable=self.layout_var, 
+                                  values=["hierarchical", "spring", "circular", "grid"], 
+                                  state="readonly", width=12)
+        layout_combo.pack(side=tk.LEFT, padx=(5, 10))
+        layout_combo.bind('<<ComboboxSelected>>', self.on_layout_change)
+        
+        # Node size control
+        ttk.Label(layout_frame, text="Node Size:").pack(side=tk.LEFT, padx=(10, 5))
+        self.node_size_var = tk.IntVar(value=800)
+        node_size_scale = ttk.Scale(layout_frame, from_=200, to=1500, 
+                                  variable=self.node_size_var, orient=tk.HORIZONTAL,
+                                  length=100, command=self.on_node_size_change)
+        node_size_scale.pack(side=tk.LEFT, padx=2)
+        
+        # Enable mouse interaction events
+        self.canvas.mpl_connect('button_press_event', self.on_mouse_press)
+        self.canvas.mpl_connect('button_release_event', self.on_mouse_release)
+        self.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
+        self.canvas.mpl_connect('scroll_event', self.on_mouse_scroll)
+        
+        # Initialize interaction state
+        self.dragging = False
+        self.drag_start = None
+        
+        # Camera following state
+        self.follow_camera = True  # Auto-follow during animation
         
     def create_status_panel(self, parent):
         """Create the bottom status and statistics panel"""
@@ -204,6 +289,9 @@ class MazeGUI:
         self.create_maze_graph()
         self.update_visualization()
         self.update_position_info()
+        
+        # Fit maze to window initially
+        self.root.after(100, self.fit_maze_to_window)  # Delay to ensure proper rendering
         
         self.log_status("Maze system initialized successfully!")
         
@@ -275,24 +363,28 @@ class MazeGUI:
         success_nodes = [n for n in self.maze_graph.nodes() if isinstance(n, str) and 'SUCCESS' in n]
         failure_nodes = [n for n in self.maze_graph.nodes() if isinstance(n, str) and 'FAILURE' in n]
         
+        # Get dynamic node size
+        base_node_size = self.node_size_var.get() if hasattr(self, 'node_size_var') else 800
+        
         # Draw regular nodes
         nx.draw_networkx_nodes(self.maze_graph, self.graph_pos, nodelist=regular_nodes,
-                              node_color='lightblue', node_size=800, ax=self.ax)
+                              node_color='lightblue', node_size=base_node_size, ax=self.ax)
         
         # Highlight current position
         if self.current_position in regular_nodes:
             nx.draw_networkx_nodes(self.maze_graph, self.graph_pos, 
                                  nodelist=[self.current_position],
-                                 node_color='yellow', node_size=1000, ax=self.ax)
+                                 node_color='yellow', node_size=base_node_size + 200, ax=self.ax)
         
         # Draw terminal nodes
+        terminal_size = max(base_node_size * 0.75, 400)
         if success_nodes:
             nx.draw_networkx_nodes(self.maze_graph, self.graph_pos, nodelist=success_nodes,
-                                  node_color='lightgreen', node_size=600, node_shape='s', ax=self.ax)
+                                  node_color='lightgreen', node_size=terminal_size, node_shape='s', ax=self.ax)
         
         if failure_nodes:
             nx.draw_networkx_nodes(self.maze_graph, self.graph_pos, nodelist=failure_nodes,
-                                  node_color='lightcoral', node_size=600, node_shape='X', ax=self.ax)
+                                  node_color='lightcoral', node_size=terminal_size, node_shape='X', ax=self.ax)
         
         # Draw edges
         for edge in self.maze_graph.edges(data=True):
@@ -308,6 +400,9 @@ class MazeGUI:
                          for i in range(len(self.current_path)-1)]
             nx.draw_networkx_edges(self.maze_graph, self.graph_pos, path_edges,
                                  edge_color='orange', width=4, alpha=0.8, ax=self.ax)
+        
+        # Highlight best paths if loaded
+        self._highlight_best_paths_on_graph()
         
         # Add labels
         node_labels = {}
@@ -333,10 +428,57 @@ class MazeGUI:
         nx.draw_networkx_edge_labels(self.maze_graph, self.graph_pos, edge_labels,
                                    font_size=6, ax=self.ax)
         
-        self.ax.set_title("Maze Structure - Current Position Highlighted in Yellow", 
-                         fontsize=12, fontweight='bold')
+        # Update title based on whether we're showing paths
+        title = "Maze Structure - Current Position Highlighted in Yellow"
+        if hasattr(self, 'show_best_paths') and self.show_best_paths and self.best_paths:
+            title += f" | Best {len(self.best_paths)} Paths Highlighted"
+        
+        self.ax.set_title(title, fontsize=12, fontweight='bold')
         self.ax.axis('off')
         self.canvas.draw()
+        
+    def _highlight_best_paths_on_graph(self):
+        """Highlight best paths on the graph"""
+        if not hasattr(self, 'show_best_paths') or not self.show_best_paths or not self.best_paths:
+            return
+            
+        colors = ['gold', 'orange', 'purple', 'cyan', 'magenta']
+        
+        for i, path_data in enumerate(self.best_paths[:5]):  # Show top 5 paths
+            if i >= len(colors):
+                break
+                
+            path_str = path_data['PATH']
+            directions = path_str.split(',')
+            current_pos = 0
+            color = colors[i]
+            
+            # Trace the path through the maze
+            for direction in directions:
+                if current_pos >= len(self.maze.maze_structure):
+                    break
+                
+                node = self.maze.maze_structure[current_pos]
+                
+                if direction in node['outcomes']:
+                    outcome = node['outcomes'][direction]
+                    
+                    if outcome['type'] == 'next':
+                        next_pos = outcome['next_position']
+                        # Check if edge exists in graph
+                        if self.maze_graph.has_edge(current_pos, next_pos):
+                            nx.draw_networkx_edges(self.maze_graph, self.graph_pos, 
+                                                 [(current_pos, next_pos)],
+                                                 edge_color=color, width=3, alpha=0.9, ax=self.ax)
+                        current_pos = next_pos
+                    else:
+                        # Terminal node
+                        terminal_node = f"{outcome['type'].upper()}_{current_pos}_{direction}"
+                        if terminal_node in self.maze_graph.nodes():
+                            nx.draw_networkx_edges(self.maze_graph, self.graph_pos, 
+                                                 [(current_pos, terminal_node)],
+                                                 edge_color=color, width=3, alpha=0.9, ax=self.ax)
+                        break
         
     def update_position_info(self):
         """Update the position information and direction buttons"""
@@ -386,6 +528,10 @@ class MazeGUI:
         self.update_position_info()
         self.update_visualization()
         
+        # Auto-center camera if following is enabled
+        if hasattr(self, 'follow_camera_var') and self.follow_camera_var.get():
+            self.center_camera_on_node(self.current_position)
+        
     def on_position_change(self):
         """Handle manual position change"""
         try:
@@ -408,6 +554,11 @@ class MazeGUI:
         self.position_var.set("0")
         self.update_position_info()
         self.update_visualization()
+        
+        # Center camera on starting position if following is enabled
+        if hasattr(self, 'follow_camera_var') and self.follow_camera_var.get():
+            self.center_camera_on_node(self.current_position)
+            
         self.log_status("Reset to starting position")
         
     def load_best_paths(self):
@@ -429,6 +580,11 @@ class MazeGUI:
                 
                 self.path_combo['values'] = path_options
                 self.log_status(f"Loaded {len(self.best_paths)} best paths")
+                
+                # Automatically enable path highlighting when paths are loaded
+                self.show_paths_var.set(True)
+                self.show_best_paths = True
+                self.update_visualization()
                 
                 # Update statistics
                 self.update_statistics()
@@ -453,6 +609,11 @@ class MazeGUI:
             return
             
         path = self.best_paths[selection]['PATH'].split(',')
+        
+        # Enable camera following for animation
+        self.follow_camera_var.set(True)
+        self.follow_camera = True
+        
         self.animate_path(path)
         
     def animate_path(self, directions):
@@ -476,6 +637,47 @@ class MazeGUI:
         """Step through animation manually"""
         # Implementation for manual stepping
         pass
+        
+    def center_camera_on_node(self, node):
+        """Center the camera view on a specific node"""
+        if self.maze_graph and self.graph_pos and node in self.graph_pos:
+            node_x, node_y = self.graph_pos[node]
+            
+            # Get current view range
+            xlim = self.ax.get_xlim()
+            ylim = self.ax.get_ylim()
+            
+            x_range = xlim[1] - xlim[0]
+            y_range = ylim[1] - ylim[0]
+            
+            # Center on the node
+            new_xlim = [node_x - x_range/2, node_x + x_range/2]
+            new_ylim = [node_y - y_range/2, node_y + y_range/2]
+            
+            self.ax.set_xlim(new_xlim)
+            self.ax.set_ylim(new_ylim)
+            self.canvas.draw_idle()
+            
+    def toggle_camera_follow(self):
+        """Toggle camera following during animation"""
+        self.follow_camera = self.follow_camera_var.get()
+        
+        if self.follow_camera:
+            self.log_status("Camera following enabled - will center on current position")
+            # Immediately center on current position if enabled
+            self.center_camera_on_node(self.current_position)
+        else:
+            self.log_status("Camera following disabled")
+            
+    def toggle_path_display(self):
+        """Toggle showing/hiding best paths"""
+        self.show_best_paths = self.show_paths_var.get()
+        self.update_visualization()
+        
+        if self.show_best_paths and self.best_paths:
+            self.log_status(f"Showing {len(self.best_paths)} best paths")
+        else:
+            self.log_status("Hidden path highlighting")
         
     def load_csv(self):
         """Load a different CSV file"""
@@ -543,6 +745,172 @@ class MazeGUI:
         
         self.stats_text.delete(1.0, tk.END)
         self.stats_text.insert(1.0, stats_text)
+        
+    def on_mouse_press(self, event):
+        """Handle mouse press for dragging"""
+        if event.button == 1 and event.inaxes == self.ax:  # Left mouse button
+            self.dragging = True
+            self.drag_start = (event.xdata, event.ydata)
+            
+    def on_mouse_release(self, event):
+        """Handle mouse release"""
+        self.dragging = False
+        self.drag_start = None
+        
+    def on_mouse_move(self, event):
+        """Handle mouse movement for panning"""
+        if self.dragging and self.drag_start and event.inaxes == self.ax:
+            dx = event.xdata - self.drag_start[0]
+            dy = event.ydata - self.drag_start[1]
+            
+            # Get current axis limits
+            xlim = self.ax.get_xlim()
+            ylim = self.ax.get_ylim()
+            
+            # Update limits (reverse direction for natural drag feel)
+            self.ax.set_xlim([xlim[0] - dx, xlim[1] - dx])
+            self.ax.set_ylim([ylim[0] - dy, ylim[1] - dy])
+            
+            self.canvas.draw_idle()
+            
+    def on_mouse_scroll(self, event):
+        """Handle mouse scroll for zooming"""
+        if event.inaxes == self.ax:
+            # Get current axis limits
+            xlim = self.ax.get_xlim()
+            ylim = self.ax.get_ylim()
+            
+            # Calculate zoom factor
+            zoom_factor = 1.1 if event.step > 0 else 0.9
+            
+            # Get mouse position in data coordinates
+            xdata, ydata = event.xdata, event.ydata
+            
+            # Calculate new limits centered on mouse position
+            x_range = (xlim[1] - xlim[0]) * zoom_factor
+            y_range = (ylim[1] - ylim[0]) * zoom_factor
+            
+            new_xlim = [xdata - x_range/2, xdata + x_range/2]
+            new_ylim = [ydata - y_range/2, ydata + y_range/2]
+            
+            self.ax.set_xlim(new_xlim)
+            self.ax.set_ylim(new_ylim)
+            
+            self.canvas.draw_idle()
+            
+    def fit_maze_to_window(self):
+        """Fit the entire maze to the window"""
+        if self.maze_graph and self.graph_pos:
+            # Get all node positions
+            x_coords = [pos[0] for pos in self.graph_pos.values()]
+            y_coords = [pos[1] for pos in self.graph_pos.values()]
+            
+            if x_coords and y_coords:
+                # Add padding around the maze
+                padding = 1.0
+                x_min, x_max = min(x_coords) - padding, max(x_coords) + padding
+                y_min, y_max = min(y_coords) - padding, max(y_coords) + padding
+                
+                self.ax.set_xlim([x_min, x_max])
+                self.ax.set_ylim([y_min, y_max])
+                self.canvas.draw()
+                
+                self.log_status("Fitted maze to window")
+                
+    def reset_view(self):
+        """Reset view to original state"""
+        self.ax.autoscale()
+        self.canvas.draw()
+        self.log_status("Reset view to original")
+        
+    def center_on_current(self):
+        """Center view on current position"""
+        self.center_camera_on_node(self.current_position)
+        self.log_status(f"Centered camera on position {self.current_position}")
+        
+    def zoom_in(self):
+        """Zoom in by 20%"""
+        xlim = self.ax.get_xlim()
+        ylim = self.ax.get_ylim()
+        
+        x_center = (xlim[0] + xlim[1]) / 2
+        y_center = (ylim[0] + ylim[1]) / 2
+        
+        x_range = (xlim[1] - xlim[0]) * 0.8
+        y_range = (ylim[1] - ylim[0]) * 0.8
+        
+        self.ax.set_xlim([x_center - x_range/2, x_center + x_range/2])
+        self.ax.set_ylim([y_center - y_range/2, y_center + y_range/2])
+        self.canvas.draw()
+        
+    def zoom_out(self):
+        """Zoom out by 20%"""
+        xlim = self.ax.get_xlim()
+        ylim = self.ax.get_ylim()
+        
+        x_center = (xlim[0] + xlim[1]) / 2
+        y_center = (ylim[0] + ylim[1]) / 2
+        
+        x_range = (xlim[1] - xlim[0]) * 1.2
+        y_range = (ylim[1] - ylim[0]) * 1.2
+        
+        self.ax.set_xlim([x_center - x_range/2, x_center + x_range/2])
+        self.ax.set_ylim([y_center - y_range/2, y_center + y_range/2])
+        self.canvas.draw()
+        
+    def on_layout_change(self, event=None):
+        """Handle layout change"""
+        layout_type = self.layout_var.get()
+        
+        if layout_type == "hierarchical":
+            self.graph_pos = self.create_hierarchical_layout()
+        elif layout_type == "spring":
+            self.graph_pos = nx.spring_layout(self.maze_graph, k=3, iterations=50)
+        elif layout_type == "circular":
+            # Only use regular nodes for circular layout
+            regular_nodes = [n for n in self.maze_graph.nodes() if isinstance(n, int)]
+            pos = nx.circular_layout(self.maze_graph.subgraph(regular_nodes))
+            # Add terminal nodes around their parents
+            self.graph_pos = self._add_terminal_positions(pos)
+        elif layout_type == "grid":
+            # Create a grid layout for regular nodes
+            regular_nodes = [n for n in self.maze_graph.nodes() if isinstance(n, int)]
+            cols = int(len(regular_nodes)**0.5) + 1
+            pos = {}
+            for i, node in enumerate(sorted(regular_nodes)):
+                row = i // cols
+                col = i % cols
+                pos[node] = (col * 2, -row * 2)
+            self.graph_pos = self._add_terminal_positions(pos)
+        
+        self.update_visualization()
+        self.log_status(f"Changed layout to {layout_type}")
+        
+    def _add_terminal_positions(self, base_pos):
+        """Add terminal node positions around their parent nodes"""
+        pos = base_pos.copy()
+        
+        for node in self.maze_graph.nodes():
+            if isinstance(node, str):
+                parts = node.split('_')
+                parent_node = int(parts[1])
+                direction = parts[2]
+                
+                if parent_node in pos:
+                    parent_x, parent_y = pos[parent_node]
+                    
+                    if direction == 'left':
+                        pos[node] = (parent_x - 1.2, parent_y - 0.5)
+                    elif direction == 'right':
+                        pos[node] = (parent_x + 1.2, parent_y - 0.5)
+                    else:  # middle
+                        pos[node] = (parent_x, parent_y - 1)
+        
+        return pos
+        
+    def on_node_size_change(self, value):
+        """Handle node size change"""
+        self.update_visualization()
         
     def log_status(self, message):
         """Log a status message"""

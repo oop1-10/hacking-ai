@@ -32,7 +32,7 @@ class MazeGenerator:
         backbone_path = self._create_backbone_path()
         
         # Create a deterministic maze based on seed
-        for i in range(8):  # 15 decision points
+        for i in range(35):  # 15 decision points
             # Determine available directions (1-3 options)
             num_directions = (hash(f"{self.seed_key}_{i}_dirs") % 3) + 1
             available_directions = ['left', 'middle', 'right'][:num_directions]
@@ -118,12 +118,12 @@ class MazeGenerator:
         
         # First, determine available directions for each position
         available_dirs_per_pos = {}
-        for i in range(15):
+        for i in range(8):  # Match the maze size
             num_directions = (hash(f"{self.seed_key}_{i}_dirs") % 3) + 1
             available_dirs_per_pos[i] = directions[:num_directions]
         
         # Now create backbone ensuring directions are available
-        for i in range(min(path_length, 14)):
+        for i in range(min(path_length, 7)):  # Match the maze size (8 positions = 0-7)
             available = available_dirs_per_pos[i]
             # Choose from available directions based on seed
             choice_idx = hash(f"{self.seed_key}_backbone_{i}") % len(available)
