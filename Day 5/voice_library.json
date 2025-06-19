@@ -1,0 +1,182 @@
+{
+  "zero": {
+    "sample_rate": 44100,
+    "duration": 2.089795918367347,
+    "recorded_at": "2025-06-19T13:17:10.395613"
+  },
+  "one": {
+    "sample_rate": 44100,
+    "duration": 1.787936507936508,
+    "recorded_at": "2025-06-19T13:13:50.715913"
+  },
+  "two": {
+    "sample_rate": 44100,
+    "duration": 1.6021768707482993,
+    "recorded_at": "2025-06-19T13:13:54.812951"
+  },
+  "three": {
+    "sample_rate": 44100,
+    "duration": 1.6253968253968254,
+    "recorded_at": "2025-06-19T13:13:58.812157"
+  },
+  "four": {
+    "sample_rate": 44100,
+    "duration": 1.6253968253968254,
+    "recorded_at": "2025-06-19T13:14:02.886531"
+  },
+  "five": {
+    "sample_rate": 44100,
+    "duration": 1.4396371882086167,
+    "recorded_at": "2025-06-19T13:14:08.585549"
+  },
+  "six": {
+    "sample_rate": 44100,
+    "duration": 2.2987755102040817,
+    "recorded_at": "2025-06-19T13:14:17.692458"
+  },
+  "seven": {
+    "sample_rate": 44100,
+    "duration": 1.7647165532879818,
+    "recorded_at": "2025-06-19T13:14:21.946552"
+  },
+  "eight": {
+    "sample_rate": 44100,
+    "duration": 1.4628571428571429,
+    "recorded_at": "2025-06-19T13:14:25.794994"
+  },
+  "nine": {
+    "sample_rate": 44100,
+    "duration": 1.509297052154195,
+    "recorded_at": "2025-06-19T13:14:31.652121"
+  },
+  "ten": {
+    "sample_rate": 44100,
+    "duration": 1.7647165532879818,
+    "recorded_at": "2025-06-19T13:14:37.698842"
+  },
+  "eleven": {
+    "sample_rate": 44100,
+    "duration": 2.507755102040816,
+    "recorded_at": "2025-06-19T13:14:42.400906"
+  },
+  "twelve": {
+    "sample_rate": 44100,
+    "duration": 1.811156462585034,
+    "recorded_at": "2025-06-19T13:14:49.365116"
+  },
+  "thirteen": {
+    "sample_rate": 44100,
+    "duration": 1.8808163265306121,
+    "recorded_at": "2025-06-19T13:14:53.882924"
+  },
+  "fifteen": {
+    "sample_rate": 44100,
+    "duration": 2.2058956916099772,
+    "recorded_at": "2025-06-19T13:15:31.996121"
+  },
+  "sixteen": {
+    "sample_rate": 44100,
+    "duration": 2.2291156462585033,
+    "recorded_at": "2025-06-19T13:15:36.943927"
+  },
+  "seventeen": {
+    "sample_rate": 44100,
+    "duration": 1.8575963718820863,
+    "recorded_at": "2025-06-19T13:15:41.498065"
+  },
+  "eighteen": {
+    "sample_rate": 44100,
+    "duration": 1.7182766439909296,
+    "recorded_at": "2025-06-19T13:15:45.500590"
+  },
+  "nineteen": {
+    "sample_rate": 44100,
+    "duration": 2.020136054421769,
+    "recorded_at": "2025-06-19T13:15:50.614628"
+  },
+  "twenty": {
+    "sample_rate": 44100,
+    "duration": 1.555736961451247,
+    "recorded_at": "2025-06-19T13:15:54.378572"
+  },
+  "thirty": {
+    "sample_rate": 44100,
+    "duration": 1.787936507936508,
+    "recorded_at": "2025-06-19T13:15:58.592582"
+  },
+  "forty": {
+    "sample_rate": 44100,
+    "duration": 1.811156462585034,
+    "recorded_at": "2025-06-19T13:16:02.700305"
+  },
+  "fifty": {
+    "sample_rate": 44100,
+    "duration": 1.6486167800453515,
+    "recorded_at": "2025-06-19T13:16:07.554887"
+  },
+  "sixty": {
+    "sample_rate": 44100,
+    "duration": 2.182675736961451,
+    "recorded_at": "2025-06-19T13:16:11.937562"
+  },
+  "seventy": {
+    "sample_rate": 44100,
+    "duration": 1.9969160997732427,
+    "recorded_at": "2025-06-19T13:16:16.281848"
+  },
+  "eighty": {
+    "sample_rate": 44100,
+    "duration": 1.6021768707482993,
+    "recorded_at": "2025-06-19T13:16:20.687287"
+  },
+  "ninety": {
+    "sample_rate": 44100,
+    "duration": 1.6486167800453515,
+    "recorded_at": "2025-06-19T13:16:24.893426"
+  },
+  "hundred": {
+    "sample_rate": 44100,
+    "duration": 1.7414965986394557,
+    "recorded_at": "2025-06-19T13:16:29.430954"
+  },
+  "thousand": {
+    "sample_rate": 44100,
+    "duration": 2.066575963718821,
+    "recorded_at": "2025-06-19T13:16:39.669420"
+  },
+  "million": {
+    "sample_rate": 44100,
+    "duration": 1.6718367346938776,
+    "recorded_at": "2025-06-19T13:16:43.803936"
+  },
+  "billion": {
+    "sample_rate": 44100,
+    "duration": 1.9040362811791383,
+    "recorded_at": "2025-06-19T13:16:48.140770"
+  },
+  "and": {
+    "sample_rate": 44100,
+    "duration": 1.6253968253968254,
+    "recorded_at": "2025-06-19T13:16:52.216937"
+  },
+  "point": {
+    "sample_rate": 44100,
+    "duration": 1.7647165532879818,
+    "recorded_at": "2025-06-19T13:16:56.637143"
+  },
+  "minus": {
+    "sample_rate": 44100,
+    "duration": 1.6253968253968254,
+    "recorded_at": "2025-06-19T13:17:01.205924"
+  },
+  "negative": {
+    "sample_rate": 44100,
+    "duration": 1.5325170068027212,
+    "recorded_at": "2025-06-19T13:17:05.503783"
+  },
+  "fourteen": {
+    "sample_rate": 44100,
+    "duration": 2.2987755102040817,
+    "recorded_at": "2025-06-19T13:17:35.004294"
+  }
+}
