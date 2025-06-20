@@ -6,7 +6,7 @@ from network.network import Network
 from network.mnist_loader import load_mnist_data, get_batch
 
 
-def train_mnist_network(epochs=10, batch_size=32, learning_rate=0.001):
+def train_mnist_network(epochs=10, batch_size=32, learning_rate=0.1):
     """Train the neural network on MNIST dataset."""
     print("Loading MNIST dataset...")
     (train_images, train_labels_encoded, train_labels), (test_images, test_labels_encoded, test_labels) = load_mnist_data()
@@ -204,7 +204,7 @@ def main():
             train_mnist_network()
     else:
         # Train new model with more epochs for better performance
-        network, accuracy = train_mnist_network(epochs=15, batch_size=64, learning_rate=0.001)
+        network, accuracy = train_mnist_network(epochs=30, batch_size=64, learning_rate=0.1)
         print(f"\nTraining completed! Final accuracy: {accuracy:.4f}")
         print(f"Model saved to: {model_path}")
 

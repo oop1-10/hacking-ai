@@ -400,8 +400,8 @@ class DigitDrawer:
                         audio_data = np.array(data['audio_data'], dtype=np.int16)
                         self._play_audio_array(audio_data)
                     
-                    # Small pause between words
-                    time.sleep(0.2)
+                    # Small pause between words (reduced for faster TTS)
+                    time.sleep(0.05)
                 else:
                     print(f"  Word '{word}' not found in voice library!")
                     
@@ -467,7 +467,7 @@ class DigitDrawer:
     def load_model(self):
         """Load the trained MNIST model."""
         # Prioritize the newly trained model over demo model
-        model_paths = ["models/mnist_model_final.pkl", "models/demo_model.pkl"]
+        model_paths = ["mnist_mode-01-30.pkl", "models/mnist_model-120.pkl", "models/mnist_model_final.pkl", "models/demo_model.pkl"]
         
         for model_path in model_paths:
             if os.path.exists(model_path):
