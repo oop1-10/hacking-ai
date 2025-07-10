@@ -1,0 +1,133 @@
+import random
+import time
+
+def print_slowly(text, delay=0.03):
+    """Print text character by character for a nice effect"""
+    for char in text:
+        print(char, end='', flush=True)
+        time.sleep(delay)
+    print()
+
+def get_response(user_input):
+    """Simple AI responses based on what the user says"""
+    user_input = user_input.lower()
+
+    # Greetings
+    if any(word in user_input for word in ['hello', 'hi', 'hey']):
+        responses = [
+            "Hello there! I'm your friendly AI buddy! 😊",
+            "Hi! Nice to meet you! What's your name?",
+            "Hey! I'm so excited to talk with you!"
+        ]
+        return random.choice(responses)
+
+    # Name questions
+    elif 'name' in user_input:
+        return "My name is Buddy the AI! I love making new friends. What should I call you?"
+
+    # How are you
+    elif any(phrase in user_input for phrase in ['how are you', 'how do you feel']):
+        responses = [
+            "I'm doing great! Thanks for asking! 🌟",
+            "I'm fantastic! Ready to have some fun!",
+            "I'm wonderful! How are YOU doing?"
+        ]
+        return random.choice(responses)
+
+    # Math questions
+    elif 'math' in user_input or any(word in user_input for word in ['add', 'plus']):
+        return "I love math! Try asking me something like '5 + 3' and I'll solve it!"
+
+    # Simple math calculation
+    elif ... :  #ELIF STATEMENT HERE, IN LINES OF else if '+' is in users input...
+        try:
+            parts = user_input.split('+')
+            if len(parts) == 2:
+                num1 = int(parts[0].strip())
+                num2 = int(parts[1].strip())
+                result = num1 + num2
+                return f"Easy! {num1} + {num2} = {result}! 🧮"
+        except:
+            return "Hmm, I didn't understand that math problem. Try something like '5 + 3'!"
+
+    # Animal questions
+    elif ... :  #ELIF STATEMENT HERE, IN LINES OF else if 'animal' is in users input...
+        animals = ['🐶 dog', '🐱 cat', '🐰 rabbit', '🐸 frog', '🦆 duck', '🐼 panda']
+        animal = random.choice(animals)
+        return f"I love animals! My favorite today is a {animal}! What's your favorite animal?"
+
+    # Color questions
+        elif ... :  #ELIF STATEMENT HERE, IN LINES OF else if 'color' is in users input...
+        colors = ['red like a strawberry 🍓', 'blue like the ocean 🌊', 'green like grass 🌱', 
+                 'yellow like the sun ☀️', 'purple like grapes 🍇', 'orange like a pumpkin 🎃']
+        color = random.choice(colors)
+        return f"I love colors! Today I'm thinking about {color}! What's your favorite color?"
+
+    # Games
+    elif 'game' in user_input or 'play' in user_input:
+        return "Let's play! Try asking me about animals, colors, or give me math problems! Or say 'joke' for a funny joke!"
+
+    # Jokes
+    elif 'joke' in user_input or 'funny' in user_input:
+        jokes = [
+            "Why don't scientists trust atoms? Because they make up everything! 😄",
+            "What do you call a sleeping bull? A bulldozer! 🐂💤",
+            "Why did the math book look so sad? Because it had too many problems! 📚😢",
+            "What do you call a dinosaur that crashes his car? Tyrannosaurus Wrecks! 🦕🚗"
+        ]
+        return random.choice(jokes)
+
+    # Goodbye
+    elif any(word in user_input for word in ['bye', 'goodbye', 'see you']):
+        return "Goodbye! It was so nice talking with you! Come back anytime! 👋✨"
+
+    # Default responses
+    else:
+        responses = [
+            "That's interesting! Tell me more! 🤔",
+            "Wow! I'd love to learn more about that!",
+            "Cool! Can you ask me about animals, colors, math, or tell me to tell you a joke?",
+            "That sounds awesome! What else would you like to talk about?",
+            "Neat! Try asking me to play a game or tell you a joke!"
+        ]
+        return random.choice(responses)
+
+def main():
+    print("🤖✨ Welcome to Buddy the Friendly AI! ✨🤖")
+    print("=" * 50)
+    print_slowly("Hi there! I'm Buddy, your friendly AI companion!")
+    print_slowly("I love to chat, play games, solve math problems, and tell jokes!")
+    print_slowly("Just type anything to start talking with me!")
+    print_slowly("(Type 'quit' anytime to stop)")
+    print()
+
+    while True:
+        try:
+            # Get user input
+            user_input = 'INPUT FUNCTION HERE'.strip()
+
+            # Check if user wants to quit
+            if 'USE THE VARiABLE WHERE WE ASKED FOR INPUT'.lower() in ['quit', 'exit', 'stop']:
+                print_slowly("Buddy: Aww, goodbye! Thanks for being my friend! 🌟👋")
+                break
+
+            # Skip empty input
+            if not user_input:
+                continue
+
+            # Get AI response
+            response = get_response(user_input)
+
+            # Print response with effect
+            print("Buddy: ", end="")
+            print_slowly(response)
+            print()
+
+        except KeyboardInterrupt:
+            print_slowly("\n\nBuddy: Oops! Looks like you pressed Ctrl+C! Goodbye! 👋")
+            break
+        except Exception as e:
+            print_slowly("Buddy: Oops! Something went wrong, but I'm still here to chat! 😊")
+
+if __name__ == "__main__":
+    main()
