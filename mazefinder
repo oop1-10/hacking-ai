@@ -105,3 +105,16 @@ for path_num, path in enumerate(all_paths):
     for row in range(len(maze)):
         for col in range(len(maze[0])):
             if (row, col) == (start_row, start_col):
+                if (row, col) == (start_row, start_col):
+                print("S", end=" ")
+            elif (row, col) == (end_row, end_col):
+                print("G", end=" ")
+            elif (row, col) in path:
+                print("*", end=" ")
+            elif maze[row][col] == 1:
+                print("#", end=" ")
+            else:
+                print(".", end=" ")
+        print()  # New line after each row
+
+print("\n🎊 Adventure complete! The robot learned about pathfinding! 🎊")
