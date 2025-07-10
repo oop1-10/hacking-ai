@@ -1,0 +1,107 @@
+# Simple Maze Pathfinding for Kids!
+# Let's help a robot find ALL possible paths through a maze
+
+print("🤖 Welcome to the Maze Robot Adventure! 🤖")
+print("=" * 50)
+
+# Our maze - think of it like a grid of rooms
+# 0 = empty room (robot can go here)
+# 1 = wall (robot cannot go here)
+maze = [
+    [0, 0, 1, 0],
+    [0, 1, 0, 0], 
+    [0, 0, 0, 1],
+    [1, 0, 0, 0]
+]
+
+# Show the maze to kids
+print("Here's our maze:")
+print("0 = empty room, 1 = wall")
+for row in maze:
+    print(row)
+
+# Where does our robot start and where should it go?
+start_row = 0
+start_col = 0
+end_row = 3
+end_col = 3
+
+print(f"\n🤖 Robot starts at: row {start_row}, column {start_col}")
+print(f"🎯 Robot wants to reach: row {end_row}, column {end_col}")
+
+# Let's find ALL possible paths!
+all_paths = []  # This will store all the paths we find
+
+def find_all_paths(current_row, current_col, path_so_far):
+    """
+    This function helps our robot explore the maze
+    It remembers where it's been and tries all possible moves
+    """
+
+    # Add current position to our path
+    current_path = path_so_far + [('COORDINATE WHERE WE ARE RIGHT NOW', 'COORDINATE WHERE WE ARE RIGHT NOW')]
+
+    # Did we reach the goal? Yahoo! 🎉
+    if current_row == 'SOME END COORD' and current_col == 'SOME END COORDINATE':
+        all_paths.append(current_path)
+        return
+
+    # Try moving in all 4 directions: up, down, left, right
+    moves = [
+        (-1, 0),  # up
+        (1, 0),   # down
+        (0, -1),  # left
+        (0, 1)    # right
+    ]
+
+    for move_row, move_col in moves:
+        new_row = current_row + #DORECTION WE WANT TO MOVE IN - ROWS
+        new_col = current_col + #DORECTION WE WANT TO MOVE IN - COLUMNS
+
+        # Check if the new position is safe to move to
+        # 1. Is it inside the maze?
+        # 2. Is it not a wall?
+        # 3. Have we already visited this spot in our current path?
+
+        if (0 <= 'SOME NEW ROW' < len(maze) and 
+            0 <= 'SOME NEW COLUMN' < len(maze[0]) and
+            maze[new_row][new_col] == 0 and
+            (new_row, new_col) not in current_path):
+
+            # It's safe! Let's explore this direction
+            find_all_paths(new_row, new_col, current_path)
+
+# Start the adventure!
+print("\n🔍 Robot is exploring the maze...")
+find_all_paths(start_row, start_col, [])
+
+# Show all the paths we found
+print(f"\n🎉 Great! Robot found {len(all_paths)} different paths!")
+print("=" * 50)
+
+if len(all_paths) == 0:
+    print("😢 Oh no! Robot couldn't find any path to the goal!")
+else:
+    for i, path in enumerate(all_paths):
+        print(f"\nPath #{i+1}:")
+        for j, (row, col) in enumerate(path):
+            if j == 0:
+                print(f"  🤖 START at row {row}, col {col}")
+            elif j == len(path) - 1:
+                print(f"  🎯 GOAL reached at row {row}, col {col}")
+            else:
+                print(f"  ➡️  Move to row {row}, col {col}")
+        print(f"  📏 This path has {len(path)} steps")
+
+# Show paths on the maze visually
+print("\n" + "=" * 50)
+print("🗺️  Let's see the paths on our maze!")
+
+for path_num, path in enumerate(all_paths):
+    print(f"\nPath #{path_num + 1} visualization:")
+    print("S = Start, G = Goal, * = Robot's path, # = Wall, . = Empty")
+
+    # Create a visual map
+    for row in range(len(maze)):
+        for col in range(len(maze[0])):
+            if (row, col) == (start_row, start_col):
