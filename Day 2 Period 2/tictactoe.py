@@ -11,19 +11,19 @@ def print_board(board):
 def check_winner(board):
     # Check rows
     for i in range(3):
-        if board[i][0] == board[i][1] == board[i][2] == 'X' or board[i][0] == board[i][1] == board[i][2] == 'O':
+        if (board[i][0] == board[i][1] == board[i][2] == 'X') or (board[i][0] == board[i][1] == board[i][2] == 'O'):
             return board[i][0]
 
     for i in range(3):
         # Check columns
-        if board[0][i] == board[1][i] == board[2][i] == 'X' or board[0][i] == board[1][i] == board[2][i] == 'O':
+        if (board[0][i] == board[1][i] == board[2][i] == 'X') or (board[0][i] == board[1][i] == board[2][i] == 'O'):
             return board[0][i]
     
 
     # Check diagonals
-    if board[0][0] == board[1][1] == board[2][2] == 'O' or board[0][0] == board[1][1] == board[2][2] == 'X':
+    if (board[0][0] == board[1][1] == board[2][2] == 'O') or (board[0][0] == board[1][1] == board[2][2] == 'X'):
         return board[1][1]
-    if board[0][2] == board[1][1] == board[2][0] == 'O' or board[0][2] == board[1][1] == board[2][0] == 'X':
+    if (board[0][2] == board[1][1] == board[2][0] == 'O') or (board[0][2] == board[1][1] == board[2][0] == 'X'):
         return board[1][1]
 
     return False
@@ -45,6 +45,7 @@ while True:
             board[row-1][col-1] = 'O'
         else:
             print("Cell already taken, try again.")
+            turnCount-=1
             continue
 
         if check_winner(board) == 'X' or check_winner(board) == 'O':
