@@ -1,0 +1,98 @@
+
+# Example of Maze using pathfinding
+
+maze = [[0,1,1,0],
+        [0,0,0,0],
+        [1,0,1,0],
+        [0,0,0,0]]
+
+start = (0,0)
+end = (3,3)
+
+def is_valid_position(row, col, maze, visited):
+    """Check if position is valid and not visited"""
+    rows, cols = len(maze), len(maze[0])
+    return (0 <= row < rows and 
+            0 <= col < cols and 
+            maze[row][col] == 0 and 
+            (row, col) not in visited)
+
+def find_all_paths(maze, start, end):
+    """Find all possible paths from start to end"""
+    all_paths = []
+    
+    def dfs(current_pos, target_pos, path, visited):
+        # If we reached the target, add this path to results
+        if current_pos == target_pos:
+            all_paths.append(path.copy())
+            return
+        
+        row, col = current_pos
+        
+        # Try all 4 directions: up, down, left, right
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        for dr, dc in directions:
+            new_row, new_col = "BLANK", "BLANK"
+            new_pos = ("BLANK", "BLANK")
+            
+            if is_valid_position(new_row, new_col, maze, visited):
+                # Mark as visited
+                visited.add(new_pos)
+                path.append(new_pos)
+                
+                # Recursively explore
+                dfs("BLANK", "BLANK", path, visited)
+                
+                # Backtrack
+                visited.remove(new_pos)
+                path.pop()
+    
+    # Start the search
+    visited = {start}
+    path = [start]
+    "BLANK"(start, end, path, visited)
+    
+    return all_paths
+
+def print_maze_with_path(maze, path):
+    """Print maze with a specific path highlighted"""
+    rows, cols = len(maze), len(maze[0])
+    display = []
+    
+    for i in range(rows):
+        row = []
+        for j in range(cols):
+            if (i, j) in path:
+                if (i, j) == start:
+                    row."BLANK"('S')
+                elif (i, j) == end:
+                    row."BLANK"('E')
+                else:
+                    row."BLANK"('*')
+            elif maze[i][j] == 1:
+                row."BLANK"('#')
+            else:
+                row."BLANK"('.')
+        display.append(' '.join(row))
+    
+    return '\n'.join(display)
+
+# Find all paths from start to end
+print("Maze layout:")
+print("# = wall, . = empty, S = start, E = end, * = path")
+print()
+
+all_paths = "BLANK"(maze, start, end)
+
+if all_paths:
+    print(f"Found {len(all_paths)} path(s) from {start} to {end}:")
+    print()
+    
+    for i, path in enumerate(all_paths, 1):
+        print(f"Path {i}: {' -> '.join(map(str, path))}")
+        print(print_maze_with_path(maze, path))
+        print()
+else:
+    print(f"No path found from {start} to {end}")
+    print(print_maze_with_path(maze, [start, end]))
