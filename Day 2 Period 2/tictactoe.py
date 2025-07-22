@@ -11,19 +11,19 @@ def print_board(board):
 def check_winner(board):
     # Check rows
     for i in range(3):
-        if (board[i][0] == board[i][1] == board[i][2] == 'X') or (board[i][0] == board[i][1] == board[i][2] == 'O'):
+        if (all(board[i][j] == 'X' for j in range(3)) or all(board[i][j] == 'O' for j in range(3))):
             return board[i][0]
 
     for i in range(3):
         # Check columns
-        if (board[0][i] == board[1][i] == board[2][i] == 'X') or (board[0][i] == board[1][i] == board[2][i] == 'O'):
+        if (all(board[j][i] == 'X' for j in range(3)) or all(board[j][i] == 'O' for j in range(3))):
             return board[0][i]
     
 
-    # Check diagonals
-    if (board[0][0] == board[1][1] == board[2][2] == 'O') or (board[0][0] == board[1][1] == board[2][2] == 'X'):
+    if (all(board[i][i] == 'O' for i in range(3)) or all(board[i][i] == 'X' for i in range(3))):
         return board[1][1]
-    if (board[0][2] == board[1][1] == board[2][0] == 'O') or (board[0][2] == board[1][1] == board[2][0] == 'X'):
+    # Check diagonals
+    if (all(board[i][2-i] == 'O' for i in range(3)) or all(board[i][2-i] == 'X' for i in range(3))):
         return board[1][1]
 
     return False
@@ -39,10 +39,13 @@ while True:
     else:
         turnCount += 1
 
-        if board[row-1][col-1] == ' ' and turnCount % 2 == 1:
-            board[row-1][col-1] = 'X'  # Player's move
-        elif board[row-1][col-1] == ' ' and turnCount % 2 == 0:
-            board[row-1][col-1] = 'O'
+        selectedRow = row - 1
+        selectedCol = col - 1
+
+        if board[selectedRow][selectedCol] == ' ' and turnCount % 2 == 1:
+            board[selectedRow][selectedCol] = 'X'  # Player's move
+        elif board[selectedRow][selectedCol] == ' ' and turnCount % 2 == 0:
+            board[selectedRow][selectedCol] = 'O'
         else:
             print("Cell already taken, try again.")
             turnCount-=1
