@@ -1,0 +1,178 @@
+#Simple AI-like Image Analyzer for Kids
+#Author: Illia Siusiel
+#Target: Teaching kids about image recognition concepts
+
+import random
+from PIL import Image
+import os
+
+print("=" * 80)
+print("Welcome to our Simple AI Image Analyzer!")
+print("Our AI will try to guess what's in your picture!")
+print("=" * 80)
+
+# Simple "knowledge base" - what our AI has "learned"
+image_knowledge = {
+    'bright': ['sun', 'flower', 'happy face', 'yellow object'],
+    'dark': ['night sky', 'shadow', 'cave', 'dark object'],
+    'colorful': ['rainbow', 'painting', 'toys', 'flowers'],
+    'mostly_red': ['apple', 'fire truck', 'strawberry', 'rose', 'sun'],
+    'mostly_green': ['grass', 'tree', 'frog', 'lettuce'],
+    'mostly_blue': ['sky', 'ocean', 'blueberry', 'sad face'],
+    'square_like': ['window', 'box', 'computer screen', 'picture frame'],
+    'round_like': ['ball', 'sun', 'clock', 'wheel']
+}
+
+def analyze_image_colors(image_path):
+    """Analyze the dominant colors in an image"""
+    try:
+        # Open and resize image for faster processing
+        img = Image.open(image_path)
+        img = img.resize((50, 50))  # Make it small for simple analysis
+        img = img.convert('RGB')
+
+        # Get all pixel colors
+        pixels = list(img.getdata())
+
+        # Count color properties
+        red_count = 0
+        green_count = 0
+        blue_count = 0
+        bright_count = 0
+
+        for r, g, b in pixels:
+            # Check if pixel is bright
+            brightness = (r + g + b) / 3
+            if brightness > 128:
+                bright_count += 1
+
+            # Check dominant colors
+            if r > g and r > b:
+                red_count += 1
+            elif g > r and g > b:
+                green_count += 1
+            elif b > r and b > g:
+                blue_count += 1
+
+        total_pixels = len(pixels)
+
+        # Determine image characteristics
+        characteristics = []
+
+        if bright_count > total_pixels * 0.6:
+            characteristics.append('bright')
+        elif bright_count < total_pixels * 0.3:
+            characteristics.append('dark')
+
+        if red_count > total_pixels * 0.3:
+            characteristics.append('mostly_red')
+        elif green_count > total_pixels * 0.3:
+            characteristics.append('mostly_green')
+        elif blue_count > total_pixels * 0.3:
+            characteristics.append('mostly_blue')
+
+        if red_count > 100 and green_count > 100 and blue_count > 100:
+            characteristics.append('colorful')
+
+        return characteristics
+
+    except Exception as e:
+        print(f"Oops! I couldn't analyze that image: {e}")
+        return []
+
+def analyze_image_shape(image_path):
+    """Simple shape analysis"""
+    try:
+        img = Image.open(image_path)
+        width, height = img.size
+
+        # Simple shape detection based on dimensions
+        if abs(width - height) < min(width, height) * 0.1:
+            return ['square_like']
+        elif width > height * 1.5:
+            return ['rectangular']
+        else:
+            return ['round_like']
+    except:
+        return []
+
+def make_ai_guess(characteristics):
+    """Our AI makes educated guesses based on characteristics"""
+    possible_objects = []
+    confidence_scores = []
+
+    for characteristic in characteristics:
+        if characteristic in image_knowledge:
+            for obj in image_knowledge[characteristic]:
+                if obj not in possible_objects:
+                    possible_objects.append(obj)
+                    confidence_scores.append(random.randint(60, 90))
+                else:
+                    # If object appears multiple times, increase confidence
+                    index = possible_objects.index(obj)
+                    confidence_scores[index] = min(95, confidence_scores[index] + 10)
+
+    return list(zip(possible_objects, confidence_scores))
+
+# Main program
+def main():
+    print("Let's teach our AI about images!")
+    print("\nFirst, let me show you what I already know:")
+    for category, objects in image_knowledge.items():
+        print(f"If an image is {category}, it might be: {', '.join(objects[:2])}...")
+
+    print("\n" + "=" * 60)
+
+    # For demonstration, let's create a simple image analysis
+    image_file = input("Enter the name of an image file (or 'demo' for a demonstration): ")
+
+    if image_file.lower() == 'demo':
+        print("\nDemo Mode: Let me show you how I analyze images!")
+        demo_characteristics = ['bright', 'mostly_red', 'round_like']
+        print(f"Imagine I'm analyzing an image and I detect: {demo_characteristics}")
+
+        guesses = make_ai_guess(demo_characteristics)
+        print("\nBased on my analysis, here are my guesses:")
+
+        for obj, confidence in sorted(guesses, key=lambda x: x[1], reverse=True):
+            print(f"I think it might be a {obj} - I'm {confidence}% confident!")
+
+        if guesses:
+            best_guess = max(guesses, key=lambda x: x[1])
+            print(f"\nMy best guess is: {best_guess[0]} (confidence: {best_guess[1]}%)")
+
+    else:
+        if os.path.exists(image_file):
+            print(f"\nAnalyzing {image_file}...")
+            print("Looking at colors...")
+            color_characteristics = analyze_image_colors(image_file)
+            print("Looking at shapes...")
+            shape_characteristics = analyze_image_shape(image_file)
+
+            all_characteristics = color_characteristics + shape_characteristics
+            print(f"I detected these characteristics: {all_characteristics}")
+
+            if all_characteristics:
+                guesses = make_ai_guess(all_characteristics)
+                print("\nBased on my analysis, here are my guesses:")
+
+                for obj, confidence in sorted(guesses, key=lambda x: x[1], reverse=True)[:5]:
+                    print(f"I think it might be a {obj} - I'm {confidence}% confident!")
+
+                if guesses:
+                    best_guess = max(guesses, key=lambda x: x[1])
+                    print(f"\nMy best guess is: {best_guess[0]} (confidence: {best_guess[1]}%)")
+            else:
+                print("Hmm, I couldn't detect any familiar characteristics in this image.")
+        else:
+            print("I couldn't find that image file. Make sure it's in the same folder as this program!")
+
+    print("\n" + "=" * 60)
+    print("That's how simple AI image recognition works!")
+    print("Real AI uses much more complex math, but the basic idea is the same:")
+    print("1. Look for patterns and characteristics")
+    print("2. Compare them to what we've learned before")
+    print("3. Make educated guesses based on similarities")
+
+if __name__ == "__main__":
+    main()
