@@ -1,0 +1,33 @@
+#Data Science Exercise
+#Author: Illia Siusiel
+
+#Target Student Group: Grade 7/8 - High School
+#Target: teaching a program different emotions
+
+print("=" * 100)
+
+print("Hi everybody, today we will teach our program to recognize different emotions and try to guess the emotion we guess by specific facial features. Let's begin with a simple example")
+
+print("=" * 100)
+
+#Example 1
+
+learnt_emotions = {'happy' : ['smile', 'laugh'], 'sad' : ['cry', 'sigh'], 'angry' : ['frown', 'scream'], 'surprised' : ['jump', 'shout']} #We will use a dictionary to store those emotions and their characteristics that we have already taught our program
+
+ask_emotion = input("Which emotion would you want me to learn this time? ") #Ask the user what emotion they will teach us this time
+ask_emotion = ask_emotion.lower() #Take whatever the user gave us (even if its all capital letters) and convert it to lower case
+
+if ask_emotion not in list(learnt_emotions.keys()): #Check if we have already taught our program this emotion, if not, run the indented code below
+  print("Okay, let's teach our program the emotion " + ask_emotion + "!")
+  ask_characteristic = input("What is a characteristic of a person who is " + ask_emotion + "? ") #Ask the user for a characteristic of the emotion they want to teach
+  ask_characteristic = ask_characteristic.lower() #convert it to lower case
+  learnt_emotions[ask_emotion] = [ask_characteristic] #Add the emotion and its characteristic to our dictionary
+  print("Great! Now our program knows that a person who is " + ask_emotion + " usually does " + ask_characteristic + "!") #Tell the user that we have successfully taught our program the emotion
+
+guess_characteristic = input("Now, I will guess an emotion based on the characteristics we have taught our program. Please enter a characteristic: ") #Ask the user for a characteristic to guess the emotion
+for emotion in learnt_emotions.keys():
+  if guess_characteristic in learnt_emotions[emotion]:
+    print("I think the emotion is being " + emotion + "!")
+    break
+
+#Example 1 ends here
