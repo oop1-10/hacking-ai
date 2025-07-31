@@ -1,0 +1,136 @@
+maze = [[0,0,1,0],
+        [0,0,0,0],
+        [0,1,1,0],
+        [0,0,0,0]]
+
+start = (0,0)
+end = (3,3)
+
+def is_valid_position(row, col, maze, visited):
+    """Check if position is valid and not visited"""
+    rows, cols = len(maze), len(maze[0])
+    return (0 <= row < rows and 
+            0 <= col < cols and 
+            maze[row][col] == 0 and 
+            (row, col) not in visited)
+
+def find_all_paths(maze, start, end):
+    """Find all possible paths from start to end"""
+    all_paths = []
+
+    def dfs(current_pos, target_pos, path, visited):
+        # If we reached the target, add this path to results
+        if current_pos == target_pos:
+            all_paths.append(path.copy())
+            return
+
+        row, col = current_pos
+
+        # Try all 4 directions: up, down, left, right
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+        for dr, dc in directions:
+            new_row, new_col = row + dr, col + dc
+            new_pos = (new_row, new_col)
+
+            if is_valid_position(new_row, new_col, maze, visited):
+                # Mark as visited
+                visited.add(new_pos)
+                path.append(new_pos)
+
+                # Recursively explore
+                dfs(new_pos, target_pos, path, visited)
+
+                # Backtrack
+                visited.remove(new_pos)
+                path.pop()
+
+    # Start the search
+    visited = {start}
+    path = [start]
+    dfs(start, end, path, visited)
+
+    return all_paths
+
+def print_maze_with_path(maze, path):
+    """Print maze with a specific path highlighted"""
+    rows, cols = len(maze), len(maze[0])
+    display = []
+
+    for i in range(rows):
+        row = []
+        for j in range(cols):
+            if (i, j) in path:
+                if (i, j) == start:
+                    row.append('S')
+                elif (i, j) == end:
+                    row.append('E')
+                else:
+                    row.append('*')
+            elif maze[i][j] == 1:
+                row.append('#')
+            else:
+                row.append('.')
+        display.append(' '.join(row))
+
+    return '\n'.join(display)
+
+def find_shortest_path(all_paths):
+    """Find the shortest path from a list of paths"""
+    if not all_paths:
+        return None
+
+    shortest_path = min(all_paths, key=len)
+    return shortest_path
+
+# Find all paths from start to end
+print("Maze layout:")
+print("# = wall, . = empty, S = start, E = end, * = path")
+print()
+
+all_paths = find_all_paths(maze, start, end)
+
+if all_paths:
+    print(f"Found {len(all_paths)} path(s) from {start} to {end}")
+    print()
+
+    # First, display ALL possible paths
+    print("ALL POSSIBLE PATHS:")
+    print("=" * 50)
+    for i, path in enumerate(all_paths, 1):
+        print(f"Path {i} (length: {len(path)}): {' -> '.join(map(str, path))}")
+        print(print_maze_with_path(maze, path))
+        print()
+
+    print("=" * 50)
+    print("PATH ANALYSIS:")
+    print("=" * 50)
+
+    # Now analyze the paths to find the optimal one
+    shortest_path = find_shortest_path(all_paths)
+    shortest_length = len(shortest_path)
+    longest_path = max(all_paths, key=len)
+
+    # Count how many paths have the shortest length
+    shortest_paths = [path for path in all_paths if len(path) == shortest_length]
+
+    print(f"Total paths found: {len(all_paths)}")
+    print(f"Shortest path length: {shortest_length} steps")
+    print(f"Longest path length: {len(longest_path)} steps")
+    print(f"Number of optimal (shortest) paths: {len(shortest_paths)}")
+    print()
+
+    # Display the optimal path(s)
+    print("OPTIMAL PATH(S):")
+    print("-" * 30)
+    for i, path in enumerate(shortest_paths, 1):
+        print(f"Optimal Path {i}: {' -> '.join(map(str, path))}")
+        if i == 1:  # Show visualization for first optimal path
+            print(print_maze_with_path(maze, path))
+        print()
+
+    print(f"Efficiency: The optimal path saves {len(longest_path) - len(shortest_path)} steps compared to the longest path")
+
+else:
+    print(f"No path found from {start} to {end}")
+    print(print_maze_with_path(maze, [start, end]))
