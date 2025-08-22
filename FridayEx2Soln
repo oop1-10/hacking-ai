@@ -1,0 +1,26 @@
+#Example 2
+
+learnt_emotions = {'happy' : ['smile', 0.7, 'laugh', 0.9], 'sad' : ['cry', 0.9, 'sigh', 0.6], 'angry' : ['frown', 0.7, 'scream', 0.6], 'surprised' : ['jump', 0.8, 'shout', 0.7], 'sleepy': ['yawn', 0.9]} #We will use a dictionary to store those emotions and their characteristics that we have already taught our program
+
+ask_emotion = input("Please tell me the emotions I will learn now") #Ask the user what emotion they will teach us this time
+ask_emotion = ask_emotion.lower() #Take whatever the user gave us (even if its all capital letters) and convert it to lower case
+
+if ask_emotion not in list(learnt_emotions.keys()): #Check if we have already taught our program this emotion, if not, run the indented code below
+  print("Okay, let's teach our program the emotion " + ask_emotion + "!")
+  ask_characteristic = input("What is a characteristic of a person who is " + ask_emotion + "? ") #Ask the user for a characteristic of the emotion they want to teach
+  ask_characteristic = ask_characteristic.lower() #convert it to lower case
+
+  probability = int(input("How sure are you that this characteristic is a good indicator of the emotion " + ask_emotion + "? (Please enter a number from 0 to 100) "))
+  probability = probability / 100
+  learnt_emotions[ask_emotion] = [ask_characteristic, probability] #Add the emotion and its characteristic to our dictionary
+
+  print("Great! Now our program knows that a person who is " + ask_emotion + " usually does " + ask_characteristic + "!") #Tell the user that we have successfully taught our program the emotion
+
+guess_characteristic = input("Now, I will guess an emotion based on the characteristics we have taught our program. Please enter a characteristic: ") #Ask the user for a characteristic to guess the emotion
+for index in range(len(learnt_emotions.keys())):
+  emotion = list(learnt_emotions.keys())[index]
+  for characteristic_index in range(len(learnt_emotions[emotion])):
+    if guess_characteristic == learnt_emotions[emotion][characteristic_index]:
+      print("I think the emotion is being " + emotion + " with a probability of " + str(learnt_emotions[emotion][characteristic_index + 1] * 100) + "%!")
+
+#Example 2 ends here
